@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.0.4+ (2022101400)
+### Fixed
+- Removed no longer existing user profile fields from the element form (Twitter/ICQ/etc)
+
+## 4.0.4 (2022091300)
+### Changed
+- Forms in the popups now use core dynamic forms
+- Easier navigation between editing template and issued certificates
+
 ## 4.0.3 (2022082400)
 ### Fixed
 - Fixed bug with the reportbuilder reports showing 'source unavailable' error to some users.
