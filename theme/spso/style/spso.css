@@ -13,3 +13,11 @@ h2 {
 h3, h3 a {
     color: #003a70;
 }
+
+.activity-wrapper .text-uppercase.small {
+    display: none;
+}
+
+.activity-wrapper .activityname {
+    font-size: 1.1rem;
+}
