@@ -21,3 +21,7 @@ h3, h3 a {
 .activity-wrapper .activityname {
     font-size: 1.1rem;
 }
+
+.page-header-image.mr-2 {
+    display: none;
+}
