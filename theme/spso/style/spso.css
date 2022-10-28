@@ -25,3 +25,7 @@ h3, h3 a {
 .page-header-image.mr-2 {
     display: none;
 }
+
+.pagelayout-incourse #region-main h2 {
+    display: none;
+}
