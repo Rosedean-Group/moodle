@@ -29,3 +29,7 @@ h3, h3 a {
 .pagelayout-incourse #region-main h2 {
     display: none;
 }
+
+.completion-info {
+    display: none;
+}
