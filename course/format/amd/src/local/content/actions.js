@@ -45,6 +45,11 @@ prefetchStrings('core', ['movecoursesection', 'movecoursemodule', 'confirm', 'de
 // Formats can use this module addActions static method to add custom actions.
 // Direct mutations can be simple strings (mutation) name or functions.
 const directMutations = {
+    sectionHide: 'sectionHide',
+    sectionShow: 'sectionShow',
+    cmHide: 'cmHide',
+    cmShow: 'cmShow',
+    cmStealth: 'cmStealth',
     cmMoveRight: 'cmMoveRight',
     cmMoveLeft: 'cmMoveLeft',
 };
@@ -139,7 +144,6 @@ export default class extends BaseComponent {
         const actionName = target.dataset.action;
         const methodName = this._actionMethodName(actionName);
 
-        // Invoke proper method.
         if (this[methodName] !== undefined) {
             this[methodName](target, event);
             return;

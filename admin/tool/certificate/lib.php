@@ -108,7 +108,7 @@ function tool_certificate_pluginfile($course, $cm, $context, $filearea, $args, $
  * @param stdClass $user user object
  * @param bool $iscurrentuser
  * @param stdClass $course Course object
- * @return bool
+ * @return void
  */
 function tool_certificate_myprofile_navigation(core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course) {
     global $USER;
@@ -133,6 +133,9 @@ function tool_certificate_myprofile_navigation(core_user\output\myprofile\tree $
  * @return \core\output\inplace_editable
  */
 function tool_certificate_inplace_editable($itemtype, $itemid, $newvalue) {
+    global $CFG;
+    require_once($CFG->libdir . '/externallib.php');
+
     $newvalue = clean_param($newvalue, PARAM_TEXT);
     external_api::validate_context(context_system::instance());
 

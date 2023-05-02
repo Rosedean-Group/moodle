@@ -25,7 +25,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['customdata'] = 'Custom data';
+$string['datetosend'] = 'Date to send';
+$string['deletetask'] = 'Delete task';
+$string['deletetaskconfirm'] = 'Are you sure you want to delete the task scheduled to run at {$a} ? It cannot be undone.';
+$string['edittask'] = 'Edit task';
+$string['eventemailsent'] = 'New account email sent';
 $string['pluginname'] = 'Bulk resend new account email';
 $string['resend'] = 'Resend new account email';
-$string['resendcheck'] = 'Are you sure you want to resend the new account email (with a new password) to {$a} ?';
+$string['resendcheck'] = 'The new account email (with a new password) will be sent to the following accounts: {$a} Please, select the date and time to send it.';
 $string['resendnot'] = 'It\'s not possible to reset password for {$a->name} ({$a->auth})';
+$string['taskslist'] = 'Tasks list';

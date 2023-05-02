@@ -25,7 +25,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['datetosend'] = 'Data do envio';
+$string['deletetask'] = 'Excluir tarefa';
+$string['deletetaskconfirm'] = 'Você tem certeza que quer excluir a tarefa agendada para executar em {$a}? Isso não poderá ser desfeito.';
+$string['edittask'] = 'Editar tarefa';
 $string['pluginname'] = 'Reenviar e-mail de nova conta em lote';
 $string['resend'] = 'Reenviar e-mail de nova conta';
-$string['resendcheck'] = 'Você tem certeza que quer reenviar o email de nova conta (com uma nova senha) para {$a} ?';
+$string['resendcheck'] = 'O email de nova conta (com uma nova senha) será enviado para as seguintes contas: {$a} Por favor, seleciona a data e hora do envio.';
 $string['resendnot'] = 'Não é possível redefinir a senha para {$a->name} ({$a->auth})';
+$string['taskslist'] = 'Lista de tarefas';

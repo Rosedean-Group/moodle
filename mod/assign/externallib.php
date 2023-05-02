@@ -2853,6 +2853,12 @@ class mod_assign_external extends \mod_assign\external\external_api {
             throw new moodle_exception('usernotincourse');
         }
 
+        $filtered = $assign->is_userid_filtered($userid);
+        if (!$filtered) {
+            // User is filtered out by user filters or table preferences.
+            throw new moodle_exception('userisfilteredout');
+        }
+
         $return = array(
             'id' => $participant->id,
             'fullname' => $participant->fullname,

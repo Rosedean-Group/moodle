@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'tool_resendnewaccountemail';
-$plugin->release = '1';
-$plugin->version = 2021100701;
+$plugin->release = '3';
+$plugin->version = 2023013101;
 $plugin->requires = 2020061500;
 $plugin->maturity = MATURITY_STABLE;

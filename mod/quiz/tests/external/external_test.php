@@ -215,8 +215,8 @@ class external_test extends externallib_advanced_testcase {
 
         // Create what we expect to be returned when querying the two courses.
         // First for the student user.
-        $allusersfields = array('id', 'coursemodule', 'course', 'name', 'intro', 'introformat', 'introfiles', 'timeopen',
-                                'timeclose', 'grademethod', 'section', 'visible', 'groupmode', 'groupingid',
+        $allusersfields = array('id', 'coursemodule', 'course', 'name', 'intro', 'introformat', 'introfiles', 'lang',
+                                'timeopen', 'timeclose', 'grademethod', 'section', 'visible', 'groupmode', 'groupingid',
                                 'attempts', 'timelimit', 'grademethod', 'decimalpoints', 'questiondecimalpoints', 'sumgrades',
                                 'grade', 'preferredbehaviour', 'hasfeedback');
         $userswithaccessfields = array('attemptonlast', 'reviewattempt', 'reviewcorrectness', 'reviewmarks',
@@ -240,6 +240,7 @@ class external_test extends externallib_advanced_testcase {
         $quiz1->completionpass = 0;
         $quiz1->autosaveperiod = get_config('quiz', 'autosaveperiod');
         $quiz1->introfiles = [];
+        $quiz1->lang = '';
 
         $quiz2->coursemodule = $quiz2->cmid;
         $quiz2->introformat = 1;
@@ -252,6 +253,7 @@ class external_test extends externallib_advanced_testcase {
         $quiz2->completionpass = 0;
         $quiz2->autosaveperiod = get_config('quiz', 'autosaveperiod');
         $quiz2->introfiles = [];
+        $quiz2->lang = '';
 
         foreach (array_merge($allusersfields, $userswithaccessfields) as $field) {
             $expected1[$field] = $quiz1->{$field};
@@ -318,7 +320,7 @@ class external_test extends externallib_advanced_testcase {
         $result = \external_api::clean_returnvalue($returndescription, $result);
         $this->assertCount(2, $result['quizzes']);
         // We only see a limited set of fields.
-        $this->assertCount(4, $result['quizzes'][0]);
+        $this->assertCount(5, $result['quizzes'][0]);
         $this->assertEquals($quiz2->id, $result['quizzes'][0]['id']);
         $this->assertEquals($quiz2->cmid, $result['quizzes'][0]['coursemodule']);
         $this->assertEquals($quiz2->course, $result['quizzes'][0]['course']);

@@ -84,5 +84,22 @@ if ($hassiteconfig) {
     ));
     $settings->hide_if('tool_certificate/linkedinorganizationid', 'tool_certificate/show_shareonlinkedin');
 
+    $settings->add(new admin_setting_pickfilters('tool_certificate/allowfilters',
+        new lang_string('allowfilters', 'tool_certificate'),
+        new lang_string('allowfilters_desc', 'tool_certificate'),
+        ['multilang' => 1]));
+
     $ADMIN->add('certificates', $settings);
+
+    // Add Certificate Element plugins settings.
+    $ADMIN->add('modules', new admin_category('certificateelement',
+        new lang_string('subplugintype_certificateelement_plural', 'tool_certificate')));
+
+    // Now add various certificateelement.
+    $plugins = core_plugin_manager::instance()->get_plugins_of_type('certificateelement');
+    core_collator::asort_objects_by_property($plugins, 'displayname');
+    foreach ($plugins as $plugin) {
+        /** @var \tool_certificate\plugininfo\certificateelement $plugin */
+        $plugin->load_settings($ADMIN, 'certificateelement', $hassiteconfig);
+    }
 }

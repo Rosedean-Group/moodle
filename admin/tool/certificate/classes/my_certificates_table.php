@@ -105,11 +105,19 @@ class my_certificates_table extends \table_sql {
      * @return string
      */
     public function col_name($certificate) {
+        global $DB;
+
         $context = \context::instance_by_id($certificate->contextid);
+        $name = format_string($certificate->name, true, ['context' => $context]);
 
-        $column = format_string($certificate->name, true, ['context' => $context]);
-
-        return $column;
+        if ($certificate->courseid) {
+            // Obtain course directly from DB to allow missing courses.
+            if ($course = $DB->get_record('course', ['id' => $certificate->courseid])) {
+                $context = \context_course::instance($course->id);
+                $name .= " - " . format_string($course->fullname, true, ['context' => $context]);
+            }
+        }
+        return $name;
     }
 
     /**
@@ -162,7 +170,7 @@ class my_certificates_table extends \table_sql {
         $icon = new \pix_icon('download', get_string('view'), 'tool_certificate');
         $link = template::view_url($issue->code);
 
-        return $OUTPUT->action_link($link, '', null, null, $icon);
+        return $OUTPUT->action_link($link, '', null, ['target' => '_blank'], $icon);
     }
 
     /**

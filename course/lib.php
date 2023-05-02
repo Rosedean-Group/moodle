@@ -933,6 +933,7 @@ function course_delete_module($cmid, $async = false) {
     // features are not turned on, in case they were turned on previously (these will be
     // very quick on an empty table).
     $DB->delete_records('course_modules_completion', array('coursemoduleid' => $cm->id));
+    $DB->delete_records('course_modules_viewed', ['coursemoduleid' => $cm->id]);
     $DB->delete_records('course_completion_criteria', array('moduleinstance' => $cm->id,
                                                             'course' => $cm->course,
                                                             'criteriatype' => COMPLETION_CRITERIA_TYPE_ACTIVITY));
@@ -1681,7 +1682,7 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
     }
 
     // Move (only for component compatible formats).
-    if ($courseformat->supports_components()) {
+    if ($usecomponents) {
         $actions['move'] = new action_menu_link_secondary(
             new moodle_url($baseurl, [
                 'sesskey' => sesskey(),
@@ -1767,7 +1768,11 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
                 new moodle_url($baseurl, array('hide' => $mod->id)),
                 new pix_icon('t/hide', '', 'moodle', array('class' => 'iconsmall')),
                 $str->modhide,
-                array('class' => 'editing_hide', 'data-action' => 'hide')
+                [
+                    'class' => 'editing_hide',
+                    'data-action' => ($usecomponents) ? 'cmHide' : 'hide',
+                    'data-id' => $mod->id,
+                ]
             );
         } else if (!$displayedoncoursepage && $sectionvisible) {
             // Offer to "show" only if the section is visible.
@@ -1775,7 +1780,11 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
                 new moodle_url($baseurl, array('show' => $mod->id)),
                 new pix_icon('t/show', '', 'moodle', array('class' => 'iconsmall')),
                 $str->modshow,
-                array('class' => 'editing_show', 'data-action' => 'show')
+                [
+                    'class' => 'editing_show',
+                    'data-action' => ($usecomponents) ? 'cmShow' : 'show',
+                    'data-id' => $mod->id,
+                ]
             );
         }
 
@@ -1785,18 +1794,31 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
                 new moodle_url($baseurl, array('hide' => $mod->id)),
                 new pix_icon('t/unblock', '', 'moodle', array('class' => 'iconsmall')),
                 $str->makeunavailable,
-                array('class' => 'editing_makeunavailable', 'data-action' => 'hide', 'data-sectionreturn' => $sr)
+                [
+                    'class' => 'editing_makeunavailable',
+                    'data-action' => ($usecomponents) ? 'cmHide' : 'hide',
+                    'data-sectionreturn' => $sr,
+                    'data-id' => $mod->id,
+                ]
             );
         } else if ($unavailable && (!$sectionvisible || $allowstealth) && $mod->has_view()) {
             // Allow to make visually hidden module available in gradebook and other reports by making it a "stealth" module.
             // When the section is hidden it is an equivalent of "showing" the module.
             // Activities without the link (i.e. labels) can not be made available but hidden on course page.
             $action = $sectionvisible ? 'stealth' : 'show';
+            if ($usecomponents) {
+                $action = 'cm' . ucfirst($action);
+            }
             $actions[$action] = new action_menu_link_secondary(
-                new moodle_url($baseurl, array($action => $mod->id)),
+                new moodle_url($baseurl, array('stealth' => $mod->id)),
                 new pix_icon('t/block', '', 'moodle', array('class' => 'iconsmall')),
                 $str->makeavailable,
-                array('class' => 'editing_makeavailable', 'data-action' => $action, 'data-sectionreturn' => $sr)
+                [
+                    'class' => 'editing_makeavailable',
+                    'data-action' => $action,
+                    'data-sectionreturn' => $sr,
+                    'data-id' => $mod->id,
+                ]
             );
         }
     }
@@ -2704,7 +2726,7 @@ class course_request {
         }
         if (empty($properties->requester)) {
             if (!($this->properties = $DB->get_record('course_request', array('id' => $properties->id)))) {
-                print_error('unknowncourserequest');
+                throw new \moodle_exception('unknowncourserequest');
             }
         } else {
             $this->properties = $properties;
@@ -4119,14 +4141,22 @@ function course_classify_for_timeline($course, $user = null, $completioninfo = n
         $user = $USER;
     }
 
+    if ($completioninfo == null) {
+        $completioninfo = new completion_info($course);
+    }
+
+    // Let plugins override data for timeline classification.
+    $pluginsfunction = get_plugins_with_function('extend_course_classify_for_timeline', 'lib.php');
+    foreach ($pluginsfunction as $plugintype => $plugins) {
+        foreach ($plugins as $pluginfunction) {
+            $pluginfunction($course, $user, $completioninfo);
+        }
+    }
+
     $today = time();
     // End date past.
     if (!empty($course->enddate) && (course_classify_end_date($course) < $today)) {
         return COURSE_TIMELINE_PAST;
-    }
-
-    if ($completioninfo == null) {
-        $completioninfo = new completion_info($course);
     }
 
     // Course was completed.

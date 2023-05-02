@@ -1,5 +1,24 @@
 # Changelog
 
+## 4.1.3 - 2023-04-25
+### Added
+- Compatibility with Moodle LMS 4.2
+- Compatibility with PHP 8.1 for Moodle LMS 4.1 and 4.2
+### Fixed
+- Prevent debugging messages about missing leftmargin and rightmargin field types
+
+## 4.1.2 - 2023-03-14
+### Added
+- Setting to skip some text filters when generating PDFs
+
+## 4.1.1 - 2023-01-17
+### Changed
+- Automated tests fixes
+
+## 4.0.5+ - 2023-01-11
+### Changed
+- Certificates PDFs now always open in a new tab
+
 ## 4.0.5 - 2022-11-15
 ### Changed
 - Added testing on LMS 4.1 (no functional changes)

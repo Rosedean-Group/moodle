@@ -26,8 +26,6 @@ require_once('../../../config.php');
 require_once($CFG->dirroot . '/admin/user/lib.php');
 require_once($CFG->libdir.'/adminlib.php');
 
-$confirm = optional_param('confirm', 0, PARAM_BOOL);
-
 admin_externalpage_setup('userbulk');
 require_capability('moodle/user:create', context_system::instance());
 
@@ -37,47 +35,27 @@ if (empty($SESSION->bulk_users)) {
     redirect($return);
 }
 
-echo $OUTPUT->header();
+$form = new \tool_resendnewaccountemail\form\dateselector();
 
-if ($confirm and confirm_sesskey()) {
-    // Only reset password if user may actually change the password.
-    $authsavailable = get_enabled_auth_plugins();
-    $changeable = array();
+if ($data = $form->get_data()) {
 
-    foreach($authsavailable as $authplugin) {
-        if (!$auth = get_auth_plugin($authplugin)) {
-            continue;
-        }
-        if ($auth->is_internal() and $auth->can_change_password()) {
-            $changeable[$authplugin] = true;
-        }
+    $task = new tool_resendnewaccountemail\task\sendemail();
+    $task->set_custom_data(['bulk_users' => $SESSION->bulk_users]);
+    if ($data->nextruntime > time()) {
+        $task->set_next_run_time($data->nextruntime);
     }
-    list($in, $params) = $DB->get_in_or_equal($SESSION->bulk_users);
-    $rs = $DB->get_recordset_select('user', "id $in", $params);
-    foreach ($rs as $user) {
-        if (!empty($changeable[$user->auth])) {
-            setnew_password_and_mail($user);
-            unset_user_preference('create_password', $user);
-            set_user_preference('auth_forcepasswordchange', 1, $user);
-            unset($SESSION->bulk_users[$user->id]);
-        } else {
-            echo $OUTPUT->notification(get_string('resendnot', 'tool_resendnewaccountemail', (object)['name' => fullname($user, true), 'auth' => $user->auth]));
-        }
-    }
-    $rs->close();
-    echo $OUTPUT->notification(get_string('changessaved'), 'notifysuccess');
-    echo $OUTPUT->continue_button($return);
+    \core\task\manager::reschedule_or_queue_adhoc_task($task);
+    redirect(new moodle_url('/admin/tool/resendnewaccountemail/index.php'), get_string('changessaved'));
 } else {
     list($in, $params) = $DB->get_in_or_equal($SESSION->bulk_users);
     $userlist = $DB->get_records_select_menu('user', "id $in", $params, 'fullname', 'id,'.$DB->sql_fullname().' AS fullname', 0, MAX_BULK_USERS);
-    $usernames = implode(', ', $userlist);
-    if (count($SESSION->bulk_users) > MAX_BULK_USERS) {
-        $usernames .= ', ...';
+    $usernames = '<ul>';
+    foreach ($userlist as $u) {
+        $usernames .= '<li>' . $u . '</li>';
     }
-    echo $OUTPUT->heading(get_string('confirmation', 'admin'));
-    $formcontinue = new single_button(new moodle_url('/admin/tool/resendnewaccountemail/resend.php', array('confirm' => 1)), get_string('yes'));
-    $formcancel = new single_button(new moodle_url('/admin/user/user_bulk.php'), get_string('no'), 'get');
-    echo $OUTPUT->confirm(get_string('resendcheck', 'tool_resendnewaccountemail', $usernames), $formcontinue, $formcancel);
+    $usernames .= '</ul>';
+    echo $OUTPUT->header();
+    echo get_string('resendcheck', 'tool_resendnewaccountemail', $usernames);
+    $form->display();
+    echo $OUTPUT->footer();
 }
-
-echo $OUTPUT->footer();

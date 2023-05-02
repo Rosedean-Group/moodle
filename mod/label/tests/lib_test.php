@@ -283,12 +283,12 @@ class lib_test extends \advanced_testcase {
             'empty spaces' => [
                 'content' => ' &nbsp; ',
                 'format' => FORMAT_HTML,
-                'expected' => 'Label'
+                'expected' => 'Text and media area'
             ],
             'only html' => [
                 'content' => '<audio controls="controls"><source src=""></audio>',
                 'format' => FORMAT_HTML,
-                'expected' => 'Label'
+                'expected' => 'Text and media area'
             ]
         ];
     }
