@@ -499,11 +499,12 @@ function print_error($errorcode, $module = 'error', $link = '', $a = null, $debu
 
 /**
  * Returns detailed information about specified exception.
- * @param exception $ex
- * @return object
+ *
+ * @param Throwable $ex any sort of exception or throwable.
+ * @return stdClass standardised info to display. Fields are clear if you look at the end of this function.
  */
-function get_exception_info($ex) {
-    global $CFG, $DB, $SESSION;
+function get_exception_info($ex): stdClass {
+    global $CFG;
 
     if ($ex instanceof moodle_exception) {
         $errorcode = $ex->errorcode;
@@ -811,8 +812,8 @@ function initialise_local_config_cache() {
     if (!empty($CFG->siteidentifier) && !file_exists($bootstrapcachefile)) {
         $contents = "<?php
 // ********** This file is generated DO NOT EDIT **********
-\$CFG->siteidentifier = '" . addslashes($CFG->siteidentifier) . "';
-\$CFG->bootstraphash = '" . hash_local_config_cache() . "';
+\$CFG->siteidentifier = " . var_export($CFG->siteidentifier, true) . ";
+\$CFG->bootstraphash = " . var_export(hash_local_config_cache(), true) . ";
 // Only if the file is not stale and has not been defined.
 if (\$CFG->bootstraphash === hash_local_config_cache() && !defined('SYSCONTEXTID')) {
     define('SYSCONTEXTID', ".SYSCONTEXTID.");
