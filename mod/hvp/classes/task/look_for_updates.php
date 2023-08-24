@@ -13,19 +13,35 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
- * @package    mod
- * @subpackage hvp
+ * Defines the task which looks for H5P updates.
+ *
+ * @package    mod_hvp
  * @copyright  2016 Joubel AS <contact@joubel.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_hvp\task;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023061200;
-$plugin->requires  = 2013051403;
-$plugin->cron      = 0;
-$plugin->component = 'mod_hvp';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.23.2';
+/**
+ * The mod_hvp look for updates task class
+ *
+ * @package    mod_hvp
+ * @copyright  2016 Joubel AS <contact@joubel.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class look_for_updates extends \core\task\scheduled_task {
+    public function get_name() {
+        return get_string('lookforupdates', 'mod_hvp');
+    }
+
+    public function execute() {
+        // Check to make sure external communications hasn't been disabled.
+        if (get_config('mod_hvp', 'hub_is_enabled') || get_config('mod_hvp', 'send_usage_statistics')) {
+            $core = \mod_hvp\framework::instance();
+            $core->fetchLibrariesMetadata();
+        }
+    }
+}
