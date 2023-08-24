@@ -30,7 +30,7 @@ Feature: Select content bank files using the content bank files repository
       | System       |           | contenttype_h5p | admin | filltheblanks.h5p       | /h5p/tests/fixtures/filltheblanks.h5p       |
     And the following "activities" exist:
       | activity | name       | intro      | introformat | course | idnumber |
-      | forum    | Forum      | ForumDesc  | 1           | mscC1  | forum1   |
+      | forum    | Forum      |            | 1           | mscC1  | forum1   |
       | folder   | Folder     | FolderDesc | 1           | mscC1  | folder1  |
     And the following "course enrolments" exist:
       | user     | course | role           |
@@ -133,15 +133,15 @@ Feature: Select content bank files using the content bank files repository
   Scenario: Non-editing teacher can not see the content bank repository
     Given I am on the Forum "Forum activity" page logged in as teacher2
     And I click on "Add discussion topic" "link"
-    And I click on "Link" "button"
-    When I click on "Browse repositories..." "button"
+    And I click on "Advanced" "button"
+    When I click on "Add..." "button"
     Then I should not see "Content bank" in the ".fp-repo-area" "css_element"
 
   Scenario: Student can not see the content bank repository
     Given I am on the Forum "Forum activity" page logged in as student
     And I click on "Add discussion topic" "link"
-    And I click on "Link" "button"
-    When I click on "Browse repositories..." "button"
+    And I click on "Advanced" "button"
+    When I click on "Add..." "button"
     Then I should not see "Content bank" in the ".fp-repo-area" "css_element"
 
   Scenario: Both content name and file name are shown when a content is selected
