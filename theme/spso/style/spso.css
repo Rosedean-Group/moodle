@@ -33,3 +33,7 @@ h3, h3 a {
 .completion-info {
     display: none;
 }
+
+.coursebox > .info > .coursename {
+    font-weight: 600;
+}
